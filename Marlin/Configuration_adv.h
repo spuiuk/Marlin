@@ -340,7 +340,6 @@
  *
  * The fan turns on automatically whenever any driver is enabled and turns
  * off (or reduces to idle speed) shortly after drivers are turned off.
- *
  */
 //#define USE_CONTROLLER_FAN
 #if ENABLED(USE_CONTROLLER_FAN)
@@ -595,7 +594,7 @@
 #define Y_HOME_BUMP_MM 5
 #define Z_HOME_BUMP_MM 2
 #define HOMING_BUMP_DIVISOR { 2, 2, 4 }  // Re-Bump Speed Divisor (Divides the Homing Feedrate)
-//#define QUICK_HOME                     // If homing includes X and Y, do a diagonal move initially
+#define QUICK_HOME                       // If homing includes X and Y, do a diagonal move initially
 //#define HOMING_BACKOFF_MM { 2, 2, 2 }  // (mm) Move away from the endstops after homing
 
 // When G28 is called, this option will make Y home before X
@@ -648,7 +647,7 @@
    * differs, a mode set eeprom write will be completed at initialization.
    * Use the option below to force an eeprom write to a V3.1 probe regardless.
    */
-  //#define BLTOUCH_SET_5V_MODE
+  #define BLTOUCH_SET_5V_MODE
 
   /**
    * Safety: Activate if connecting a probe with an unknown voltage mode.
@@ -715,14 +714,14 @@
     // Define one position per Z stepper in stepper driver order.
     #define Z_STEPPER_ALIGN_STEPPER_XY { { 210.7, 102.5 }, { 152.6, 220.0 }, { 94.5, 102.5 } }
   #else
-    // Amplification factor. Used to scale the correction step up or down in case
-    // the stepper (spindle) position is farther out than the test point.
-    #define Z_STEPPER_ALIGN_AMP 1.0       // Use a value > 1.0 NOTE: This may cause instability!
+    // Amplification factor. Used to scale the correction step up or down.
+    // In case the stepper (spindle) position is further out than the test point.
+    // Use a value > 1. NOTE: This may cause instability
+    #define Z_STEPPER_ALIGN_AMP 1.0
   #endif
 
-  // On a 300mm bed a 5% grade would give a misalignment of ~1.5cm
   #define G34_MAX_GRADE              5    // (%) Maximum incline that G34 will handle
-  #define Z_STEPPER_ALIGN_ITERATIONS 5    // Number of iterations to apply during alignment
+  #define Z_STEPPER_ALIGN_ITERATIONS 3    // Number of iterations to apply during alignment
   #define Z_STEPPER_ALIGN_ACC        0.02 // Stop iterating early if the accuracy is better than this
   #define RESTORE_LEVELING_AFTER_G34      // Restore leveling after G34 is done?
   // After G34, re-home Z (G28 Z) or just calculate it from the last probe heights?
@@ -760,6 +759,7 @@
 // Minimum time that a segment needs to take if the buffer is emptied
 #define DEFAULT_MINSEGMENTTIME        20000   // (ms)
 
+// If defined the movements slow down when the look ahead buffer is only half full
 // Slow down the machine if the look ahead buffer is (by default) half full.
 // Increase the slowdown divisor for larger buffer sizes.
 #define SLOWDOWN
@@ -939,7 +939,7 @@
 // @section lcd
 
 #if EITHER(ULTIPANEL, EXTENSIBLE_UI)
-  #define MANUAL_FEEDRATE { 50*60, 50*60, 4*60, 60 } // Feedrates for manual moves along X, Y, Z, E from panel
+  #define MANUAL_FEEDRATE { 50*60, 50*60, 4*60, 2*60 } // Feedrates for manual moves along X, Y, Z, E from panel
   #define SHORT_MANUAL_Z_MOVE 0.025 // (mm) Smallest manual Z move (< 0.1mm)
   #if ENABLED(ULTIPANEL)
     #define MANUAL_E_MOVES_RELATIVE // Display extruder move distance rather than "position"
@@ -964,7 +964,7 @@
 #if HAS_LCD_MENU
 
   // Include a page of printer information in the LCD Main Menu
-  //#define LCD_INFO_MENU
+  #define LCD_INFO_MENU
   #if ENABLED(LCD_INFO_MENU)
     //#define LCD_PRINTER_INFO_IS_BOOTSCREEN // Show bootscreen(s) instead of Printer Info pages
   #endif
@@ -992,7 +992,7 @@
 #endif // HAS_LCD_MENU
 
 // Scroll a longer status message into view
-//#define STATUS_MESSAGE_SCROLLING
+#define STATUS_MESSAGE_SCROLLING
 
 // On the Info Screen, display XY with one decimal place when possible
 //#define LCD_DECIMAL_SMALL_XY
@@ -1036,8 +1036,8 @@
   // Enable this option and set to HIGH if your SD cards are incorrectly detected.
   //#define SD_DETECT_STATE HIGH
 
-  #define SD_FINISHED_STEPPERRELEASE true          // Disable steppers when SD Print is finished
-  #define SD_FINISHED_RELEASECOMMAND "M84 X Y Z E" // You might want to keep the Z enabled so your bed stays in place.
+  #define SD_FINISHED_STEPPERRELEASE true   // Disable steppers when SD Print is finished
+  #define SD_FINISHED_RELEASECOMMAND "M84"  // Use "M84XYE" to keep Z enabled so your bed stays in place
 
   // Reverse SD sort to show "more recent" files first, according to the card's FAT.
   // Since the FAT gets out of order with usage, SDCARD_SORT_ALPHA is recommended.
@@ -1060,9 +1060,6 @@
    * during SD printing. If the recovery file is found at boot time, present
    * an option on the LCD screen to continue the print from the last-known
    * point in the file.
-   *
-   * If the machine reboots when resuming a print you may need to replace or
-   * reformat the SD card. (Bad sectors delay startup triggering the watchdog.)
    */
   //#define POWER_LOSS_RECOVERY
   #if ENABLED(POWER_LOSS_RECOVERY)
@@ -1122,7 +1119,7 @@
   //#define LONG_FILENAME_HOST_SUPPORT
 
   // Enable this option to scroll long filenames in the SD card menu
-  //#define SCROLL_LONG_FILENAMES
+  #define SCROLL_LONG_FILENAMES
 
   // Leave the heaters on after Stop Print (not recommended!)
   //#define SD_ABORT_NO_COOLDOWN
@@ -1468,7 +1465,7 @@
  *
  * Warning: Does not respect endstops!
  */
-//#define BABYSTEPPING
+#define BABYSTEPPING
 #if ENABLED(BABYSTEPPING)
   //#define INTEGRATED_BABYSTEPPING         // EXPERIMENTAL integration of babystepping into the Stepper ISR
   //#define BABYSTEP_WITHOUT_HOMING
@@ -1477,7 +1474,7 @@
   #define BABYSTEP_MULTIPLICATOR_Z  1       // Babysteps are very small. Increase for faster motion.
   #define BABYSTEP_MULTIPLICATOR_XY 1
 
-  //#define DOUBLECLICK_FOR_Z_BABYSTEPPING  // Double-click on the Status Screen for Z Babystepping.
+  #define DOUBLECLICK_FOR_Z_BABYSTEPPING    // Double-click on the Status Screen for Z Babystepping.
   #if ENABLED(DOUBLECLICK_FOR_Z_BABYSTEPPING)
     #define DOUBLECLICK_MAX_INTERVAL 1250   // Maximum interval between clicks, in milliseconds.
                                             // Note: Extra time may be added to mitigate controller latency.
@@ -1512,7 +1509,7 @@
  * If this algorithm produces a higher speed offset than the extruder can handle (compared to E jerk)
  * print acceleration will be reduced during the affected moves to keep within the limit.
  *
- * See http://marlinfw.org/docs/features/lin_advance.html for full instructions.
+ * See https://marlinfw.org/docs/features/lin_advance.html for full instructions.
  * Mention @Sebastianv650 on GitHub to alert the author of any issues.
  */
 //#define LIN_ADVANCE
@@ -1600,18 +1597,11 @@
   // Add additional compensation depending on hotend temperature
   // Note: this values cannot be calibrated and have to be set manually
   #if ENABLED(PROBE_TEMP_COMPENSATION)
-    // Max temperature that can be reached by heated bed.
-    // This is required only for the calibration process.
-    #define PTC_MAX_BED_TEMP BED_MAXTEMP
-
     // Park position to wait for probe cooldown
-    #define PTC_PARK_POS_X 0.0F
-    #define PTC_PARK_POS_Y 0.0F
-    #define PTC_PARK_POS_Z 100.0F
+    #define PTC_PARK_POS   { 0, 0, 100 }
 
     // Probe position to probe and wait for probe to reach target temperature
-    #define PTC_PROBE_POS_X  90.0F
-    #define PTC_PROBE_POS_Y 100.0F
+    #define PTC_PROBE_POS  { 90, 100 }
 
     // Enable additional compensation using hotend temperature
     // Note: this values cannot be calibrated automatically but have to be set manually
@@ -2045,7 +2035,7 @@
   #define INTERPOLATE       true  // Interpolate X/Y/Z_MICROSTEPS to 256
 
   #if AXIS_IS_TMC(X)
-    #define X_CURRENT       800        // (mA) RMS current. Multiply by 1.414 for peak current.
+    #define X_CURRENT       580        // (mA) RMS current. Multiply by 1.414 for peak current.
     #define X_CURRENT_HOME  X_CURRENT  // (mA) RMS current for sensorless homing
     #define X_MICROSTEPS     16    // 0..256
     #define X_RSENSE          0.11
@@ -2061,7 +2051,7 @@
   #endif
 
   #if AXIS_IS_TMC(Y)
-    #define Y_CURRENT       800
+    #define Y_CURRENT       580
     #define Y_CURRENT_HOME  Y_CURRENT
     #define Y_MICROSTEPS     16
     #define Y_RSENSE          0.11
@@ -2077,7 +2067,7 @@
   #endif
 
   #if AXIS_IS_TMC(Z)
-    #define Z_CURRENT       800
+    #define Z_CURRENT       580
     #define Z_CURRENT_HOME  Z_CURRENT
     #define Z_MICROSTEPS     16
     #define Z_RSENSE          0.11
@@ -2109,7 +2099,7 @@
   #endif
 
   #if AXIS_IS_TMC(E0)
-    #define E0_CURRENT      800
+    #define E0_CURRENT      650
     #define E0_MICROSTEPS    16
     #define E0_RSENSE         0.11
     #define E0_CHAIN_POS     -1
@@ -2254,7 +2244,7 @@
    * Define you own with
    * { <off_time[1..15]>, <hysteresis_end[-3..12]>, hysteresis_start[1..8] }
    */
-  #define CHOPPER_TIMING CHOPPER_DEFAULT_12V
+  #define CHOPPER_TIMING CHOPPER_DEFAULT_24V
 
   /**
    * Monitor Trinamic drivers for error conditions,
@@ -2654,7 +2644,7 @@
  * You'll need to select a pin for the ON/OFF function and optionally choose a 0-5V
  * hardware PWM pin for the speed control and a pin for the rotation direction.
  *
- * See http://marlinfw.org/docs/configuration/laser_spindle.html for more config details.
+ * See https://marlinfw.org/docs/configuration/laser_spindle.html for more config details.
  */
 //#define SPINDLE_FEATURE
 //#define LASER_FEATURE
@@ -2662,31 +2652,123 @@
   #define SPINDLE_LASER_ACTIVE_HIGH     false  // Set to "true" if the on/off function is active HIGH
   #define SPINDLE_LASER_PWM             true   // Set to "true" if your controller supports setting the speed/power
   #define SPINDLE_LASER_PWM_INVERT      true   // Set to "true" if the speed/power goes up when you want it to go slower
-  #define SPINDLE_LASER_POWERUP_DELAY   5000   // (ms) Delay to allow the spindle/laser to come up to speed/power
-  #define SPINDLE_LASER_POWERDOWN_DELAY 5000   // (ms) Delay to allow the spindle to stop
+
+  #define SPINDLE_LASER_FREQUENCY       2500   // (Hz) Spindle/laser frequency (only on supported HALs: AVR and LPC)
+
+  /**
+   * Speed / Power can be set ('M3 S') and displayed in terms of:
+   *  - PWM     (S0 - S255)
+   *  - PERCENT (S0 - S100)
+   *  - RPM     (S0 - S50000)  Best for use with a spindle
+   */
+  #define CUTTER_POWER_DISPLAY PWM
+
+  /**
+   * Relative mode uses relative range (SPEED_POWER_MIN to SPEED_POWER_MAX) instead of normal range (0 to SPEED_POWER_MAX)
+   * Best use with SuperPID router controller where for example S0 = 5,000 RPM and S255 = 30,000 RPM
+   */
+  //#define CUTTER_POWER_RELATIVE              // Set speed proportional to [SPEED_POWER_MIN...SPEED_POWER_MAX] instead of directly
 
   #if ENABLED(SPINDLE_FEATURE)
     //#define SPINDLE_CHANGE_DIR               // Enable if your spindle controller can change spindle direction
     #define SPINDLE_CHANGE_DIR_STOP            // Enable if the spindle should stop before changing spin direction
     #define SPINDLE_INVERT_DIR          false  // Set to "true" if the spin direction is reversed
 
+    #define SPINDLE_LASER_POWERUP_DELAY   5000 // (ms) Delay to allow the spindle/laser to come up to speed/power
+    #define SPINDLE_LASER_POWERDOWN_DELAY 5000 // (ms) Delay to allow the spindle to stop
+
     /**
-     *  The M3 & M4 commands use the following equation to convert PWM duty cycle to speed/power
+     * M3/M4 uses the following equation to convert speed/power to PWM duty cycle
+     * Power = ((DC / 255 * 100) - SPEED_POWER_INTERCEPT)) * (1 / SPEED_POWER_SLOPE)
+     *   where PWM DC varies from 0 to 255
      *
-     *  SPEED/POWER = PWM duty cycle * SPEED_POWER_SLOPE + SPEED_POWER_INTERCEPT
-     *    where PWM duty cycle varies from 0 to 255
-     *
-     *  set the following for your controller (ALL MUST BE SET)
+     * Set these required parameters for your controller
      */
-    #define SPEED_POWER_SLOPE    118.4
-    #define SPEED_POWER_INTERCEPT  0
-    #define SPEED_POWER_MIN     5000
-    #define SPEED_POWER_MAX    30000    // SuperPID router controller 0 - 30,000 RPM
+    #define SPEED_POWER_SLOPE           118.4  // SPEED_POWER_SLOPE = SPEED_POWER_MAX / 255
+    #define SPEED_POWER_INTERCEPT         0
+    #define SPEED_POWER_MIN            5000
+    #define SPEED_POWER_MAX           30000    // SuperPID router controller 0 - 30,000 RPM
+    #define SPEED_POWER_STARTUP       25000    // The default value for speed power when M3 is called without arguments
+
   #else
-    #define SPEED_POWER_SLOPE      0.3922
-    #define SPEED_POWER_INTERCEPT  0
-    #define SPEED_POWER_MIN       10
-    #define SPEED_POWER_MAX      100    // 0-100%
+
+    #define SPEED_POWER_SLOPE             0.3922 // SPEED_POWER_SLOPE = SPEED_POWER_MAX / 255
+    #define SPEED_POWER_INTERCEPT         0
+    #define SPEED_POWER_MIN               0
+    #define SPEED_POWER_MAX             100    // 0-100%
+    #define SPEED_POWER_STARTUP          80    // The default value for speed power when M3 is called without arguments
+
+    /**
+     * Enable inline laser power to be handled in the planner / stepper routines.
+     * Inline power is specified by the I (inline) flag in an M3 command (e.g., M3 S20 I)
+     * or by the 'S' parameter in G0/G1/G2/G3 moves (see LASER_MOVE_POWER).
+     *
+     * This allows the laser to keep in perfect sync with the planner and removes
+     * the powerup/down delay since lasers require negligible time.
+     */
+    #define LASER_POWER_INLINE
+
+    #if ENABLED(LASER_POWER_INLINE)
+      /**
+       * Scale the laser's power in proportion to the movement rate.
+       *
+       * - Sets the entry power proportional to the entry speed over the nominal speed.
+       * - Ramps the power up every N steps to approximate the speed trapezoid.
+       * - Due to the limited power resolution this is only approximate.
+       */
+      #define LASER_POWER_INLINE_TRAPEZOID
+
+      /**
+       * Continuously calculate the current power (nominal_power * current_rate / nominal_rate).
+       * Required for accurate power with non-trapezoidal acceleration (e.g., S_CURVE_ACCELERATION).
+       * This is a costly calculation so this option is discouraged on 8-bit AVR boards.
+       *
+       * LASER_POWER_INLINE_TRAPEZOID_CONT_PER defines how many step cycles there are between power updates. If your
+       * board isn't able to generate steps fast enough (and you are using LASER_POWER_INLINE_TRAPEZOID_CONT), increase this.
+       * Note that when this is zero it means it occurs every cycle; 1 means a delay wait one cycle then run, etc.
+       */
+      //#define LASER_POWER_INLINE_TRAPEZOID_CONT
+
+      /**
+       * Stepper iterations between power updates. Increase this value if the board
+       * can't keep up with the processing demands of LASER_POWER_INLINE_TRAPEZOID_CONT.
+       * Disable (or set to 0) to recalculate power on every stepper iteration.
+       */
+      //#define LASER_POWER_INLINE_TRAPEZOID_CONT_PER 10
+
+      /**
+       * Include laser power in G0/G1/G2/G3/G5 commands with the 'S' parameter
+       */
+      //#define LASER_MOVE_POWER
+
+      #if ENABLED(LASER_MOVE_POWER)
+        // Turn off the laser on G0 moves with no power parameter.
+        // If a power parameter is provided, use that instead.
+        //#define LASER_MOVE_G0_OFF
+      #endif
+
+      /**
+       * Inline flag inverted
+       *
+       * WARNING: M5 will NOT turn off the laser unless another move
+       *          is done (so G-code files must end with 'M5 I').
+       */
+      //#define LASER_POWER_INLINE_INVERT
+
+      /**
+       * Continuously apply inline power. ('M3 S3' == 'G1 S3' == 'M3 S3 I')
+       *
+       * The laser might do some weird things, so only enable this
+       * feature if you understand the implications.
+       */
+      //#define LASER_POWER_INLINE_CONTINUOUS
+
+    #else
+
+      #define SPINDLE_LASER_POWERUP_DELAY     50 // (ms) Delay to allow the spindle/laser to come up to speed/power
+      #define SPINDLE_LASER_POWERDOWN_DELAY   50 // (ms) Delay to allow the spindle to stop
+
+    #endif
   #endif
 #endif
 
