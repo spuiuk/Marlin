@@ -9,3 +9,6 @@ BLTouch Support
 Followed instructions at
 https://www.youtube.com/watch?v=sUlqrSq6LeY
 Disabled quiet a few features - look at git log
+
+Z offset calibration with BLTouch.
+https://www.youtube.com/watch?v=y_1Kg45APko
