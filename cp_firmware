@@ -1,0 +1,5 @@
+sudo mount /dev/sda1 /mnt
+sudo cp ./.pio/build/STM32F103RC_btt_512K_USB/firmware.bin /mnt
+sudo umount /mnt
+echo M997 > /dev/ttyACM0
+
