@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# find scripts directory and use it to find Marlin sources
+SCRIPTS_DIR=$(cd `dirname $0`; pwd)
+cd $SCRIPTS_DIR/..
+
+sudo mount /dev/sda1 /mnt
+sudo cp ./firmware.bin /mnt
+sudo umount /mnt
+echo M997 > /dev/ttyACM0
+
