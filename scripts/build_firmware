@@ -1,0 +1,24 @@
+#!/bin/bash
+
+# cd into scripts directory
+SCRIPTS_DIR=$(cd `dirname $0`; pwd)
+cd $SCRIPTS_DIR
+
+if [ ! -a venv/bin/activate ]
+then
+	python -m venv venv
+	. venv/bin/activate && VENV_ACTIVATED=1
+	pip install -U https://github.com/platformio/platformio-core/archive/develop.zip
+fi
+
+if [ $VENV_ACTIVATED != 1 ]
+then
+	. venv/bin/activate && VENV_ACTIVATED=1
+fi
+
+# No cd into the Marlin source directory
+cd ..
+
+# Build firmware
+platformio update
+platformio run
